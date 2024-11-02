@@ -64,7 +64,18 @@ def McNemar_test(
     :param prediction_2:  the prediction results from model 2
     :return: the test statistic chi2_Mc
     """
-    chi2_Mc = np.random.uniform(0, 1)
+    # A ~ M1,2 right, B ~ M2 wrong, C ~ M1 wrong, D ~ M1,2 wrong
+
+    B = 0
+    C = 0
+
+    for i, label in enumerate(labels):
+        if label != prediction_1[i] and label == prediction_2[i]:
+            C += 1
+        elif label == prediction_1[i] and label != prediction_2[i]:
+            B +=1
+
+    chi2_Mc = (abs(B - C) - 1)**2 / (B+C)
     return chi2_Mc
 
 
