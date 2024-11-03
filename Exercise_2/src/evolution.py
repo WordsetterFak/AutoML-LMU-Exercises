@@ -188,13 +188,13 @@ class Member:
         """
         # TODO
         if self._recombination == Recombination.INTERMEDIATE:
-            raise NotImplementedError
+            new_x = self.recombination_intermediate(self.x_coordinate.copy(), partner.x_coordinate.copy())
 
         # TODO
         elif self._recombination == Recombination.UNIFORM:
             if self._recom_prob is None:
                 raise ValueError("For Uniform recombination, the recombination probability must be given")
-            raise NotImplementedError
+            new_x = self.recombination_uniform(self.x_coordinate, partner.x_coordinate)
 
         elif self._recombination == Recombination.NONE:
             # copy is important here to not only get a reference
@@ -225,6 +225,17 @@ class Member:
     def gaussian_mutation(self, x: np.ndarray) -> np.ndarray:
         mutated_x = x + np.random.normal(loc=0, scale=self._sigma, size=x.size)
         return np.clip(mutated_x, self._bounds[0], self._bounds[1])
+
+    def recombination_intermediate(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
+        return (x+y)/2
+
+    def recombination_uniform(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
+        recomb = np.zeros(x.size)
+
+        for i in range(x.size):
+            recomb[i] = x[i] if np.random.uniform(0,1) < self._recom_prob else y[i]
+
+        return recomb
 
     def __str__(self) -> str:
         """Makes the class easily printable"""
