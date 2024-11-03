@@ -142,25 +142,25 @@ class Member:
         """
         new_x = self.x_coordinate.copy()
 
-        print(f"new point before mutation:\n {new_x}")
-
+        # print(f"new point before mutation:\n {new_x}")
+        
         # TODO modify new_x either through uniform or gaussian mutation
         if self._mutation == Mutation.UNIFORM:
-            raise NotImplementedError
+            new_x = self.uniform_mutation(new_x)
 
         elif self._mutation == Mutation.GAUSSIAN:
             if self._sigma is None:
                 raise ValueError("Sigma has to be set when gaussian mutation is used")
-            raise NotImplementedError
+            new_x = self.gaussian_mutation(new_x)
 
         elif self._mutation == Mutation.NONE:
-            raise NotImplementedError
+            new_x = new_x
 
         else:
             # We won't consider any other mutation types
             raise RuntimeError(f"Unknown mutation {self._mutation}")
 
-        print(f"new point after mutation: \n {new_x}")
+        # print(f"new point after mutation: \n {new_x}")
         child = Member(
             new_x,
             self._f,
@@ -215,6 +215,16 @@ class Member:
         )
         self._age += 1
         return child
+
+    def uniform_mutation(self, x: np.ndarray) -> np.ndarray:
+        geneToMutateIndex = np.random.randint(0, x.size - 1)
+        x[geneToMutateIndex] = np.random.uniform(self._bounds[0], self._bounds[1])
+
+        return x
+
+    def gaussian_mutation(self, x: np.ndarray) -> np.ndarray:
+        mutated_x = x + np.random.normal(loc=0, scale=self._sigma, size=x.size)
+        return np.clip(mutated_x, self._bounds[0], self._bounds[1])
 
     def __str__(self) -> str:
         """Makes the class easily printable"""
